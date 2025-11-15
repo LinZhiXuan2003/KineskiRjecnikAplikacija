@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" 
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.example.kineskagramatika.controllers.LekcijeController"
+            style="-fx-background-color: #f8f9fa;">
+
+    <top>
+        <VBox spacing="10" padding="20">
+            <HBox spacing="15" alignment="CENTER_LEFT">
+                <Button text="← Nazad" onAction="#handleBack" 
+                        style="-fx-background-color: #6c757d; -fx-text-fill: white;"/>
+                <Label text="📚 Lekcije Kineskog Jezika" 
+                       style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;" 
+                       font="$x2"/>
+            </HBox>
+            <Separator/>
+        </VBox>
+    </top>
+
+    <left>
+        <VBox spacing="10" padding="20" prefWidth="300">
+            <Label text="Lista lekcija:" style="-fx-font-weight: bold;"/>
+            <ListView fx:id="listViewLekcije" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox spacing="15" padding="20">
+            <VBox spacing="5">
+                <Label fx:id="lblNaslov" text="Odaberite lekciju" 
+                       style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;" 
+                       font="$x1.5"/>
+                <Label fx:id="lblOpis" text="Opis lekcije će se pojaviti ovdje" 
+                       style="-fx-text-fill: #7f8c8d;"/>
+            </VBox>
+
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Težina:"/>
+                <ProgressBar fx:id="progressTezina" prefWidth="100"/>
+                <Button fx:id="btnZavrsi" text="Završi lekciju" onAction="#handlePractice"
+                        style="-fx-background-color: #3498db; -fx-text-fill: white;"/>
+            </HBox>
+
+            <TextArea fx:id="taSadrzaj" VBox.vgrow="ALWAYS" 
+                      style="-fx-font-family: 'Arial'; -fx-font-size: 14px;"
+                      wrapText="true" editable="false"/>
+        </VBox>
+    </center>
+
+</BorderPane>
