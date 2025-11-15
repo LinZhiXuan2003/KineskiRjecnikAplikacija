@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Gramatika Kineskog Jezika</string>
+    <string name="lekcije">📚 Lekcije</string>
+    <string name="rjecnik">📖 Rječnik</string>
+    <string name="kviz">🎯 Kviz</string>
+    <string name="statistika">📊 Statistika</string>
+    <string name="nazad">← Nazad</string>
+    <string name="sljedece">Sljedeće pitanje</string>
+</resources>
