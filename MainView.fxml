@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" 
+      xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="org.example.kineskagramatika.controllers.MainController"
+      spacing="20.0" 
+      style="-fx-background-color: #f5f5f5;"
+      padding="20.0">
+
+    <Label text="中文语法学习 - Gramatika Kineskog Jezika" 
+           style="-fx-text-fill: #2c3e50; -fx-font-weight: bold;" 
+           font="$x2">
+
+    <HBox spacing="10.0" alignment="CENTER_LEFT">
+        <Label text="Napredak:" />
+        <ProgressBar fx:id="progressBar" prefWidth="200.0" />
+        <Label fx:id="lblProgress" text="0%" />
+    </HBox>
+
+    <GridPane hgap="15.0" vgap="15.0">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="50" />
+            <ColumnConstraints percentWidth="50" />
+        </columnConstraints>
+        
+        <rowConstraints>
+            <RowConstraints percentHeight="50" />
+            <RowConstraints percentHeight="50" />
+        </rowConstraints>
+
+        <Button text="📚 Lekcije" 
+                onAction="#handleLekcije" 
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-size: 14px;"
+                GridPane.rowIndex="0" GridPane.columnIndex="0" 
+                maxWidth="Infinity" maxHeight="Infinity" />
+
+        <Button text="📖 Rječnik" 
+                onAction="#handleRjecnik" 
+                style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-font-size: 14px;"
+                GridPane.rowIndex="0" GridPane.columnIndex="1" 
+                maxWidth="Infinity" maxHeight="Infinity" />
+
+        <Button text="🎯 Kviz" 
+                onAction="#handleKviz" 
+                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-size: 14px;"
+                GridPane.rowIndex="1" GridPane.columnIndex="0" 
+                maxWidth="Infinity" maxHeight="Infinity" />
+
+        <Button text="📊 Statistika" 
+                onAction="#handleStatistika" 
+                style="-fx-background-color: #95a5a6; -fx-text-fill: white; -fx-font-size: 14px;"
+                GridPane.rowIndex="1" GridPane.columnIndex="1" 
+                maxWidth="Infinity" maxHeight="Infinity" />
+    </GridPane>
+
+</VBox>
