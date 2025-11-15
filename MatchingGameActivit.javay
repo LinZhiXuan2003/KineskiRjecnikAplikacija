@@ -1,0 +1,210 @@
+package org.example.kineskagramatika;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.gridlayout.widget.GridLayout;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.TextView;
+import java.util.*;
+
+public class MatchingGameActivity extends AppCompatActivity {
+    
+    private GridLayout gridLayout;
+    private TextView tvScore, tvTimer;
+    private int score = 0;
+    private int attempts = 0;
+    private int matchedPairs = 0;
+    private final int TOTAL_PAIRS = 6;
+    
+    private Card firstSelected = null;
+    private Card secondSelected = null;
+    private boolean isChecking = false;
+    
+    private List<Card> cards = new ArrayList<>();
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_matching);
+        
+        initViews();
+        setupGame();
+    }
+    
+    private void initViews() {
+        gridLayout = findViewById(R.id.gridLayoutMatching);
+        tvScore = findViewById(R.id.tvMatchingScore);
+        tvTimer = findViewById(R.id.tvMatchingTimer);
+        
+        findViewById(R.id.btnNewGame).setOnClickListener(v -> setupGame());
+    }
+    
+    private void setupGame() {
+        gridLayout.removeAllViews();
+        cards.clear();
+        score = 0;
+        attempts = 0;
+        matchedPairs = 0;
+        updateScore();
+        
+        // Kreiraj parove (kineski - prijevod)
+        String[][] pairs = {
+            {"我", "ja"}, {"你", "ti"}, {"是", "biti"},
+            {"学生", "student"}, {"老师", "učitelj"}, {"中文", "kineski"}
+        };
+        
+        List<CardData> cardDataList = new ArrayList<>();
+        for (String[] pair : pairs) {
+            cardDataList.add(new CardData(pair[0], pair[1], true));
+            cardDataList.add(new CardData(pair[1], pair[0], false));
+        }
+        
+        Collections.shuffle(cardDataList);
+        
+        // Kreiraj kartice
+        for (int i = 0; i < cardDataList.size(); i++) {
+            CardData data = cardDataList.get(i);
+            Card card = new Card(this, data);
+            card.setOnClickListener(this::onCardClick);
+            
+            GridLayout.Spec rowSpec = GridLayout.spec(i / 4, 1f);
+            GridLayout.Spec colSpec = GridLayout.spec(i % 4, 1f);
+            GridLayout.LayoutParams params = new GridLayout.LayoutParams(rowSpec, colSpec);
+            params.width = 0;
+            params.height = 0;
+            params.setMargins(4, 4, 4, 4);
+            
+            card.setLayoutParams(params);
+            gridLayout.addView(card);
+            cards.add(card);
+        }
+    }
+    
+    private void onCardClick(View view) {
+        if (isChecking) return;
+        
+        Card clickedCard = (Card) view;
+        if (clickedCard.isMatched() || clickedCard.isRevealed()) return;
+        
+        clickedCard.reveal();
+        clickedCard.startAnimation(AnimationUtils.loadAnimation(this, R.anim.flip_in));
+        
+        if (firstSelected == null) {
+            firstSelected = clickedCard;
+        } else {
+            secondSelected = clickedCard;
+            isChecking = true;
+            attempts++;
+            checkForMatch();
+        }
+    }
+    
+    private void checkForMatch() {
+        if (firstSelected != null && secondSelected != null) {
+            boolean isMatch = firstSelected.matches(secondSelected);
+            
+            new Handler().postDelayed(() -> {
+                if (isMatch) {
+                    firstSelected.setMatched(true);
+                    secondSelected.setMatched(true);
+                    score += 10;
+                    matchedPairs++;
+                    
+                    // Pobjednička animacija
+                    firstSelected.startAnimation(AnimationUtils.loadAnimation(this, R.anim.match_success));
+                    secondSelected.startAnimation(AnimationUtils.loadAnimation(this, R.anim.match_success));
+                    
+                    if (matchedPairs == TOTAL_PAIRS) {
+                        onGameWon();
+                    }
+                } else {
+                    firstSelected.hide();
+                    secondSelected.hide();
+                    score = Math.max(0, score - 2);
+                    
+                    firstSelected.startAnimation(AnimationUtils.loadAnimation(this, R.anim.flip_out));
+                    secondSelected.startAnimation(AnimationUtils.loadAnimation(this, R.anim.flip_out));
+                }
+                
+                updateScore();
+                firstSelected = null;
+                secondSelected = null;
+                isChecking = false;
+            }, 1000);
+        }
+    }
+    
+    private void updateScore() {
+        tvScore.setText(String.format("Bodovi: %d\nPokušaji: %d", score, attempts));
+    }
+    
+    private void onGameWon() {
+        Toast.makeText(this, 
+            String.format("Pobjeda! Osvojili ste %d bodova sa %d pokušaja", score, attempts),
+            Toast.LENGTH_LONG).show();
+    }
+    
+    // Pomoćna klasa za kartice
+    public static class Card extends androidx.appcompat.widget.AppCompatTextView {
+        private CardData data;
+        private boolean isRevealed = false;
+        private boolean isMatched = false;
+        
+        public Card(android.content.Context context, CardData data) {
+            super(context);
+            this.data = data;
+            setupCard();
+        }
+        
+        private void setupCard() {
+            setText("?");
+            setBackgroundColor(0xFF3498DB);
+            setTextColor(0xFFFFFFFF);
+            setGravity(android.view.Gravity.CENTER);
+            setTextSize(16);
+            setPadding(16, 32, 16, 32);
+        }
+        
+        public void reveal() {
+            isRevealed = true;
+            setText(data.getDisplayText());
+            setBackgroundColor(0xFFECF0F1);
+            setTextColor(0xFF2C3E50);
+        }
+        
+        public void hide() {
+            isRevealed = false;
+            setText("?");
+            setBackgroundColor(0xFF3498DB);
+            setTextColor(0xFFFFFFFF);
+        }
+        
+        public boolean matches(Card other) {
+            return this.data.matches(other.data);
+        }
+        
+        public boolean isRevealed() { return isRevealed; }
+        public boolean isMatched() { return isMatched; }
+        public void setMatched(boolean matched) { isMatched = matched; }
+    }
+    
+    public static class CardData {
+        private String text;
+        private String pairText;
+        private boolean isChinese;
+        
+        public CardData(String text, String pairText, boolean isChinese) {
+            this.text = text;
+            this.pairText = pairText;
+            this.isChinese = isChinese;
+        }
+        
+        public String getDisplayText() { return text; }
+        public boolean matches(CardData other) {
+            return (this.isChinese && !other.isChinese && this.text.equals(other.pairText)) ||
+                   (!this.isChinese && other.isChinese && this.pairText.equals(other.text));
+        }
+    }
+}
